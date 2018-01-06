@@ -86,8 +86,6 @@ public class Model {
 		board.setCellValue(pos.m_x - 1, pos.m_y - 1, piece);
 	}
 	private void setCellAt(int x, int y, Cell piece) {
-		if (isOutOfBounds(x, y))
-			System.out.println("Trying to set cell on out of bounds Pos");
 		board.setCellValue(x - 1, y - 1, piece);
 	}
 
@@ -99,7 +97,7 @@ public class Model {
 		return x<1 || y<1 || x>getBoardSize() || y>getBoardSize();
 	}
 
-	public boolean calcIsPossibleMove(Player player, int x, int y) {
+	private boolean calcIsPossibleMove(Player player, int x, int y) {
 		if (getCellAt(x, y)!=Cell.EMPTY)
 			return false;
 		Cell thisPiece = (player==Player.PLAYER1)? Cell.PLAYER1 : Cell.PLAYER2;
@@ -123,7 +121,6 @@ public class Model {
 		return false;
 	}
 
-	//WIP
 	public boolean place(Player player, int x, int y) {
 		if (getCellAt(x, y)!=Cell.EMPTY || !isPossibleMove(player,x,y)) {
 			System.out.println("Trying to place a piece in an illegal move");
@@ -139,6 +136,7 @@ public class Model {
 			oppPiece = Cell.PLAYER1;
 			scoreP2++;
 		}
+		setCellAt(x,y,thisPlayerPiece);
 		// for each offset
 		for (int i=0; i<8; i++) {
 			int currX = x + ROW_OFFSET_ARR[i];
@@ -149,169 +147,25 @@ public class Model {
 				if (currPiece == oppPiece)
 					hasOppPieceBetween = true;
 				else if (currPiece == thisPlayerPiece && hasOppPieceBetween) {
-					// found valid move, go back in the same offset until reaching this piece again
-					int goBackx = currX - ROW_OFFSET_ARR[i];
-					int goBacky = currY - COL_OFFSET_ARR[i];
-					currPiece = getCellAt(goBackx, goBacky);
-					while (currPiece != thisPlayerPiece) {
-						flip (goBackx, goBacky);
-						goBackx -= ROW_OFFSET_ARR[i];
-						goBacky -= COL_OFFSET_ARR[i];
-						currPiece = getCellAt(goBackx, goBacky);
-					}
+					// found valid move, go back in the same offset until reaching this player's piece again
+					currX -= ROW_OFFSET_ARR[i];
+					currY -= COL_OFFSET_ARR[i];
+					do {
+						flip (currX, currY);
+						currX -= ROW_OFFSET_ARR[i];
+						currY -= COL_OFFSET_ARR[i];
+					} while (getCellAt(currX,currY)!=thisPlayerPiece);
 					break;
 				}
-				else
+				else // empty or this player's piece without an opp piece between
 					break;
 				currX += ROW_OFFSET_ARR[i];
 				currY += COL_OFFSET_ARR[i];
 			}
 		}
+		// update possible moves for both players
+		updatePossibleMoves(Player.PLAYER1);
+		updatePossibleMoves(Player.PLAYER2);
 		return true;
 	}
-
-
-
-
-
-/* OLD CODE
-	private boolean goTo(Direction direction, Cell currPlayerPiece, GamePos pos, boolean doFlip, boolean found) {
-		Cell currCell = getCellAt(pos);
-		if (currCell==Cell.EMPTY)
-			return false;
-		if (currCell==currPlayerPiece) {
-			if (!found)
-				return false;
-			if (found)
-				return true;
-		}
-		GamePos nextPos = new GamePos(1,1);
-		switch (direction) {
-			case NORTH:
-				nextPos.m_x = pos.m_x-1;
-				nextPos.m_y = pos.m_y;
-				break;
-			case SOUTH:
-				nextPos.m_x = pos.m_x+1;
-				nextPos.m_y = pos.m_y;
-				break;
-			case EAST:
-				nextPos.m_x = pos.m_x;
-				nextPos.m_y = pos.m_y+1;
-				break;
-			case WEST:
-				nextPos.m_x = pos.m_x;
-				nextPos.m_y = pos.m_y-1;
-				break;
-			case NW:
-				nextPos.m_x = pos.m_x-1;
-				nextPos.m_y = pos.m_y-1;
-				break;
-			case NE:
-				nextPos.m_x = pos.m_x-1;
-				nextPos.m_y = pos.m_y+1;
-				break;
-			case SW:
-				nextPos.m_x = pos.m_x+1;
-				nextPos.m_y = pos.m_y-1;
-				break;
-			case SE:
-				nextPos.m_x = pos.m_x+1;
-				nextPos.m_y = pos.m_y+1;
-				break;
-			default:
-				nextPos.m_x = 0;
-				nextPos.m_y = 0;
-				break;
-		}
-		if (goTo(direction, currPlayerPiece, nextPos, doFlip, true)) { //current cell contains opponent
-			if (doFlip)
-				flip(pos);
-			return true;
-		}
-		return false;
-	}
-	*/
-/* OLD CODE MAKING STACKOVERFLOW
-	private void updatePossibleMoves(Player player) {
-		HashSet<GamePos> possibleMoves;
-		Cell currPiece;
-		switch (player) {
-			case PLAYER1:
-				possibleMoves = possibleMovesP1;
-				currPiece = Cell.PLAYER1;
-				break;
-			case PLAYER2:
-			default:
-				possibleMoves = possibleMovesP2;
-				currPiece = Cell.PLAYER2;
-				break;
-		}
-
-		possibleMoves.clear();
-		for (int row = 1; row <= getBoardSize(); row++) {
-			for (int clmn = 1; clmn <= getBoardSize(); clmn++) {
-				GamePos currPos = new GamePos(row,clmn);
-				boolean south = false;
-				boolean north = false;
-				boolean east = false;
-				boolean west = false;
-				boolean nw = false;
-				boolean ne = false;
-				boolean sw = false;
-				boolean se = false;
-
-				if (getCellAt(currPos) == Cell.EMPTY) { //ok, current cell is empty, check adjacent cells
-					south = goTo(Direction.SOUTH, currPiece, new GamePos(row+1, clmn), false, false);
-					north = goTo(Direction.NORTH, currPiece, new GamePos(row-1, clmn), false, false);
-					east = goTo(Direction.EAST, currPiece, new GamePos(row, clmn+1), false, false);
-					west = goTo(Direction.WEST, currPiece, new GamePos(row, clmn-1), false, false);
-					nw = goTo(Direction.NW, currPiece, new GamePos(row-1, clmn-1), false, false);
-					ne = goTo(Direction.NE, currPiece, new GamePos(row-1, clmn+1), false, false);
-					sw = goTo(Direction.SW, currPiece, new GamePos(row+1, clmn-1), false, false);
-					se = goTo(Direction.SE, currPiece, new GamePos(row+1, clmn+1), false, false);
-				}
-				if (north || south || east || west || nw || ne || sw || se)
-					possibleMoves.add(currPos);
-			}
-		}
-
-	}
-*/
-	/* OLD CODE
-	public boolean place (Player player, GamePos pos) {
-		if (!isPossibleMove(player, pos))
-			return false;
-		Cell currPiece = (player == Player.PLAYER1)? Cell.PLAYER1 : Cell.PLAYER2;
-
-		//move is possible, set current cell to player piece
-		setCellAt(pos, currPiece);
-		int row = pos.m_x;
-		int clmn = pos.m_y;
-		boolean south = false;
-		boolean north = false;
-		boolean east = false;
-		boolean west = false;
-		boolean nw = false;
-		boolean ne = false;
-		boolean sw = false;
-		boolean se = false;
-
-		//goTo (direction, currplayerpiece, nextposition, doflipIfValidMove, false
-		south = goTo(Direction.SOUTH, currPiece, new GamePos(row+1, clmn), true, false);
-		north = goTo(Direction.NORTH, currPiece, new GamePos(row-1, clmn), true, false);
-		east = goTo(Direction.EAST, currPiece, new GamePos(row, clmn+1), true, false);
-		west = goTo(Direction.WEST, currPiece, new GamePos(row, clmn-1), true, false);
-		nw = goTo(Direction.NW, currPiece, new GamePos(row-1, clmn-1), true, false);
-		ne = goTo(Direction.NE, currPiece, new GamePos(row-1, clmn+1), true, false);
-		sw = goTo(Direction.SW, currPiece, new GamePos(row+1, clmn-1), true, false);
-		se = goTo(Direction.SE, currPiece, new GamePos(row+1, clmn+1), true, false);
-
-		updatePossibleMoves(player);
-		Player otherPlayer = (player == Player.PLAYER1) ? Player.PLAYER2 : Player.PLAYER1;
-		updatePossibleMoves(otherPlayer);
-		return (north || south || east || west || nw || ne || sw || se);
-
-	}
-*/
 }

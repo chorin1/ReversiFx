@@ -1,0 +1,32 @@
+.game-grid {
+    -fx-background-color: gray ;
+    -fx-padding: 2 ;
+}
+.game-grid-cell {
+    -fx-background-color: black, green ;
+    -fx-background-insets: 0, 0 2 2 0 ;
+}
+.game-grid-cell.first-row {
+    -fx-background-insets: 0, 5 2 2 0 ;
+}
+.game-grid-cell.first-column {
+    -fx-background-insets: 0, 0 2 2 5 ;
+}
+.game-grid-cell.top-left {
+    -fx-background-insets: 0, 5 2 2 5 ;
+}
+.game-grid-cell.last-column {
+    -fx-background-insets: 0, 0 5 2 0 ;
+}
+.game-grid-cell.last-row {
+    -fx-background-insets: 0, 0 2 5 0 ;
+}
+.game-grid-cell.bot-left {
+    -fx-background-insets: 0, 0 2 5 5 ;
+}
+.game-grid-cell.bot-right {
+    -fx-background-insets: 0, 0 5 5 0 ;
+}
+.game-grid-cell.top-right {
+    -fx-background-insets: 0, 5 5 2 0 ;
+}
