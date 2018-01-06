@@ -13,6 +13,8 @@ public class Controller {
 	private BorderPane borderPane;
 	public void initialize() {
 		Model model = new Model(8);
+		System.out.println(model.isPossibleMove(Player.PLAYER1,5,6));
+		//model.place(Player.PLAYER1,6,5);
 		Label lbl = new Label("Hello World!");
 		lbl.setTextFill(Color.web("#0076a3"));
 		/*
