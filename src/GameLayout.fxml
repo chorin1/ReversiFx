@@ -1,10 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.text.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.geometry.*?>
-<?import javafx.scene.layout.BorderPane?>
 
-<BorderPane fx:id="borderPane" fx:controller="Controller"
-            xmlns:fx="http://javafx.com/fxml">
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+
+<BorderPane fx:id="borderPane" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/9.0.1" fx:controller="Controller">
+   <right>
+      <VBox prefHeight="75.0" prefWidth="327.0" BorderPane.alignment="CENTER">
+         <children>
+            <Label text="p1 score:">
+               <font>
+                  <Font name="Lucida Console" size="24.0" />
+               </font>
+            </Label>
+            <Label alignment="CENTER" text="p2 score:">
+               <font>
+                  <Font name="Lucida Console" size="24.0" />
+               </font>
+            </Label>
+            <Label text="Current Turn:">
+               <font>
+                  <Font name="Lucida Console" size="24.0" />
+               </font>
+            </Label>
+         </children>
+      </VBox>
+   </right>
 </BorderPane>
