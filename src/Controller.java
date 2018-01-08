@@ -3,10 +3,8 @@ import javafx.geometry.HPos;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.ToolBar;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
-
 
 public class Controller {
 	public final int BOARD_SIZE = 8;
@@ -120,6 +118,7 @@ public class Controller {
 		for (int i = 0; i < BOARD_SIZE; i++) {
 			for (int j = 0; j < BOARD_SIZE; j++) {
 				Cell currCell = model.getCellAt(new GamePos(i + 1, j + 1));
+				// grid children are sorted by coulmn and then row
 				ImageView pieceImg = (ImageView)(getNodeFromGridPane(grid, j, i));
 				switch (currCell) {
 					case EMPTY:
