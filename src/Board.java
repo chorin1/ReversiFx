@@ -28,4 +28,26 @@ public class Board {
 	public int getBoardSize() {
 		return m_boardSize;
 	}
+
+	@Override public String toString() {
+		String boardString = "";
+		for (int i = 0; i<m_boardSize; i++) {
+			boardString += "[";
+			for (int j=0; j<m_boardSize; j++) {
+				switch (getCellAt(i,j)) {
+					case EMPTY:
+						boardString += " ";
+						break;
+					case PLAYER1:
+						boardString += "X";
+						break;
+					case PLAYER2:
+						boardString += "O";
+						break;
+				}
+			}
+			boardString += "]\n";
+		}
+		return boardString;
+	}
 }

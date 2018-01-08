@@ -26,8 +26,10 @@ public class GamePos {
 		return x==m_x && y==m_y;
 	}
 
-	@Override
-	public int hashCode() {
+	@Override public int hashCode() {
 		return Objects.hash(m_x, m_y);
+	}
+	@Override public String toString() {
+		return "(" + m_x + "," + m_y + ")";
 	}
 }

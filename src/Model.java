@@ -168,4 +168,13 @@ public class Model {
 		updatePossibleMoves(Player.PLAYER2);
 		return true;
 	}
+
+	@Override public String toString() {
+		String showData;
+		showData = "Score p1 = " + scoreP1 + " Score p2 = " + scoreP2 +"\n";
+		showData += "Possible moves p1 = "+possibleMovesP1+"\n";
+		showData += "Possible moves p2 = "+possibleMovesP2+"\n";
+		showData += "Board:\n" + board;
+		return showData;
+	}
 }
