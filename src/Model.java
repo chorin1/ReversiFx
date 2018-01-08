@@ -19,36 +19,21 @@ public class Model {
 		return board.getBoardSize();
 	}
 
-	public boolean isPossibleMove(Player player, GamePos pos) {
+	private boolean isPossibleMove(Player player, GamePos pos) {
 		HashSet<GamePos> possibleMoves = (player==Player.PLAYER1)? possibleMovesP1 : possibleMovesP2;
 		return possibleMoves.contains(pos);
 	}
-	public boolean isPossibleMove(Player player, int x, int y) {
+	private boolean isPossibleMove(Player player, int x, int y) {
 		return isPossibleMove(player,new GamePos(x,y));
 	}
 
 	private void updatePossibleMoves(Player player) {
-		HashSet<GamePos> possibleMoves;
-		Cell currPiece;
-		switch (player) {
-			case PLAYER1:
-				possibleMoves = possibleMovesP1;
-				currPiece = Cell.PLAYER1;
-				break;
-			case PLAYER2:
-			default:
-				possibleMoves = possibleMovesP2;
-				currPiece = Cell.PLAYER2;
-				break;
-		}
-
-		possibleMoves.clear();
-		for (int row = 1; row <= getBoardSize(); row++) {
-			for (int clmn = 1; clmn <= getBoardSize(); clmn++) {
+		HashSet<GamePos> possibleMoves = (player==Player.PLAYER1)? possibleMovesP1 : possibleMovesP2;
+				possibleMoves.clear();
+		for (int row = 1; row <= getBoardSize(); row++)
+			for (int clmn = 1; clmn <= getBoardSize(); clmn++)
 				if (calcIsPossibleMove(player, row, clmn))
 					possibleMoves.add(new GamePos(row,clmn));
-			}
-		}
 	}
 
 	private void flip(int x, int y) {
@@ -123,7 +108,7 @@ public class Model {
 
 	public boolean place(Player player, int x, int y) {
 		if (getCellAt(x, y)!=Cell.EMPTY || !isPossibleMove(player,x,y)) {
-			System.out.println("Trying to place a piece in an illegal move");
+			System.out.println("illegal move - (" +x + "," + y +")");
 			return false;
 		}
 		Cell thisPlayerPiece, oppPiece;
@@ -167,6 +152,18 @@ public class Model {
 		updatePossibleMoves(Player.PLAYER1);
 		updatePossibleMoves(Player.PLAYER2);
 		return true;
+	}
+
+	public int getScoreP1() {
+		return  scoreP1;
+	}
+	public int getScoreP2() {
+		return  scoreP2;
+	}
+
+	public boolean cantMove(Player player) {
+		HashSet<GamePos> possibleMoves = (player==Player.PLAYER1)? possibleMovesP1 : possibleMovesP2;
+		return possibleMoves.isEmpty();
 	}
 
 	@Override public String toString() {

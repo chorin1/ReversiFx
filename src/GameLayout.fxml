@@ -1,31 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Label?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
-
-<BorderPane fx:id="borderPane" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/9.0.1" fx:controller="Controller">
+<BorderPane fx:id="borderPane" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller">
    <right>
-      <VBox prefHeight="75.0" prefWidth="327.0" BorderPane.alignment="CENTER">
-         <children>
-            <Label text="p1 score:">
-               <font>
-                  <Font name="Lucida Console" size="24.0" />
-               </font>
-            </Label>
-            <Label alignment="CENTER" text="p2 score:">
-               <font>
-                  <Font name="Lucida Console" size="24.0" />
-               </font>
-            </Label>
-            <Label text="Current Turn:">
-               <font>
-                  <Font name="Lucida Console" size="24.0" />
-               </font>
-            </Label>
-         </children>
-      </VBox>
+      <GridPane alignment="TOP_CENTER" hgap="10" vgap="10">
+         <padding><Insets bottom="10" left="25" right="25" top="25" /></padding>
+         <StackPane GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="0">
+         <Text text="Game Info">
+            <font>
+               <Font name="Harlow Solid Italic" size="50.0" />
+            </font>
+         </Text>
+         </StackPane>
+         <Text fx:id="player1scr" text="Player 1 -" GridPane.columnIndex="0" GridPane.rowIndex="1">
+            <font>
+               <Font name="Arial Rounded MT Bold" size="20.0" />
+            </font>
+         </Text>
+          <Text fx:id="player2scr" text="Player 2 -" GridPane.columnIndex="0" GridPane.rowIndex="2">
+            <font>
+               <Font name="Arial Rounded MT Bold" size="20.0" />
+            </font>
+          </Text>
+          <StackPane GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="3">
+          <Text text="Current Turn">
+              <font>
+                  <Font name="Harlow Solid Italic" size="28.0" />
+              </font>
+          </Text>
+          </StackPane>
+          <StackPane alignment="TOP_CENTER" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="4">
+            <ImageView fx:id="currentPlayerImg" />
+          </StackPane>
+      </GridPane>
    </right>
 </BorderPane>
