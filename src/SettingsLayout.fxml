@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.HBox?>
+<BorderPane xmlns:fx="http://javafx.com/fxml/1"
+            xmlns="http://javafx.com/javafx/9.0.1" fx:controller="SettingsController">
+    <top>
+        <StackPane><padding><Insets top="10" bottom="15"></Insets></padding>
+        <Text text="Settings" textAlignment="CENTER">
+            <font>
+                <Font name="Harlow Solid Italic" size="50.0" />
+            </font>
+            </Text>
+        </StackPane>
+    </top>
+    <center>
+        <StackPane><padding><Insets top="15" right="50" bottom="10" left="50"></Insets></padding>
+            <VBox alignment="TOP_CENTER">
+                <HBox alignment="CENTER">
+                <Text text="Board Size: " textAlignment="CENTER"></Text>
+                <Label text= "8" fx:id="boardSizelbl" textAlignment="CENTER"></Label>
+                </HBox>
+                <Slider fx:id="boardSizeSlider" majorTickUnit="1"
+                        blockIncrement="1.0" max="20.0" min="4.0" value="8.0"/>
+                <Text text="Player 1 Piece:"></Text>
+                <ImageView fx:id="player1PieceImg"></ImageView>
+                <Text text="Player 2 Piece:"></Text>
+                <ImageView fx:id="player2PieceImg"></ImageView>
+
+            </VBox>
+        </StackPane>
+    </center>
+    <bottom>
+        <HBox alignment="CENTER" spacing="40"> <padding><Insets top="10" bottom="30"></Insets></padding>
+        <Button fx:id = "saveBtn" text="Save Changes" ></Button>
+        <Button fx:id = "cancelBtn" text="Cancel"></Button>
+        </HBox>
+    </bottom>
+</BorderPane>

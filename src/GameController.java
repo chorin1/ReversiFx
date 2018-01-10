@@ -9,10 +9,12 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import java.util.Optional;
 
-public class Controller {
+public class GameController {
 	public final int BOARD_SIZE = 4;
 	public static final int CELL_MAX_SIZE = 80;
     public static final int CELL_MIN_SIZE = 30;
+	public static final int player1Piece = 0;
+	public static final int player2Piece = 1;
 
 	@FXML
 	private Text player1scr;
@@ -27,18 +29,31 @@ public class Controller {
 	private Model model = new Model(BOARD_SIZE);
 	private Player currPlayerTurn = Player.PLAYER1;
 
+	//initialize all view objects
 	public void initialize() {
-		// check that graphics are available
+		/* check that graphics are available
 		if (Assets.blank==null || Assets.blackPiece==null || Assets.whitePiece==null)
 			throw new IllegalArgumentException("required image assets missing!");
-
+		*/
 		//set up top menu
 		MenuBar menuBar = new MenuBar();
 		initMenu(menuBar);
 
-		// set up borderpane
+		// set up borderpane (main layout)
 		borderPane.setTop(menuBar);
 		borderPane.setCenter(grid);
+
+		// set up game board
+		initBoard();
+
+		// set up score labels
+		player1scr.setText("Player1 - "+model.getScoreP1());
+		player2scr.setText("Player2 - "+model.getScoreP2());
+
+		//set up starting player piece image
+		currentPlayerImg.setImage(SettingsController.player1Piece);
+	}
+	private void initBoard() {
 		grid.getStyleClass().add("game-grid");
 
 		// set up board constraints
@@ -70,17 +85,13 @@ public class Controller {
 				pieceImg.fitHeightProperty().bind(pane.heightProperty());
 			}
 		}
-
-		// set up score labels
-		player1scr.setText("Player1 - "+model.getScoreP1());
-		player2scr.setText("Player2 - "+model.getScoreP2());
-
-		//set up starting player piece image
-		currentPlayerImg.setImage(Assets.blackPiece);
 	}
 	private void initMenu(MenuBar menuBar) {
 		Menu gameMenu = new Menu("Game");
 		Menu aboutMenu = new Menu("About");
+		aboutMenu.setOnAction(event -> {
+
+		});
 		MenuItem newGame = new MenuItem("New Game");
 		newGame.setOnAction(event-> resetGame());
 		MenuItem settings = new MenuItem("Settings");
@@ -92,18 +103,7 @@ public class Controller {
 	private ImageView addPieceImage(int i, int j) {
 		Cell currCell = model.getCellAt(new GamePos(i+1,j+1));
 		ImageView pieceImg = new ImageView();
-		switch (currCell) {
-			case EMPTY:
-				pieceImg.setImage(Assets.blank);
-				break;
-			case PLAYER1:
-				pieceImg.setImage(Assets.blackPiece);
-				break;
-			case PLAYER2:
-			default:
-				pieceImg.setImage(Assets.whitePiece);
-				break;
-		}
+		setPieceImgByCell(pieceImg,currCell);
 		pieceImg.setOnMouseReleased(e -> move(currPlayerTurn,j+1,i+1));
 		pieceImg.setPreserveRatio(true);
 		return pieceImg;
@@ -112,8 +112,8 @@ public class Controller {
 		Pane pane = new Pane();
 		pane.setOnMouseReleased(e -> move(currPlayerTurn,j+1,i+1));
 		// set each cell to stretch to its maximum available space
-		grid.setHgrow(pane, Priority.ALWAYS);
-		grid.setVgrow(pane, Priority.ALWAYS);
+		GridPane.setHgrow(pane, Priority.ALWAYS);
+		GridPane.setVgrow(pane, Priority.ALWAYS);
 		pane.getStyleClass().add("game-grid-cell");
 		if (i==0 && j==0)
 			pane.getStyleClass().add("top-left");
@@ -134,6 +134,7 @@ public class Controller {
 		return pane;
 	}
 
+	// make a move on board
 	private void move(Player player, int x, int y) {
 		if (model.place(player, x,y)) {
 			refreshBoardView();
@@ -141,29 +142,48 @@ public class Controller {
 			switchPlayerTurn();
 		}
 	}
-
-	private void refreshBoardView() {
-			for (int i = 0; i < BOARD_SIZE; i++) {
-				for (int j = 0; j < BOARD_SIZE; j++) {
-					Cell currCell = model.getCellAt(new GamePos(i + 1, j + 1));
-					// grid children are sorted by coulmn and then row
-					ImageView pieceImg = (ImageView) (getNodeFromGridPane(grid, j, i));
-					switch (currCell) {
-						case EMPTY:
-							pieceImg.setImage(Assets.blank);
-							break;
-						case PLAYER1:
-							pieceImg.setImage(Assets.blackPiece);
-							break;
-						case PLAYER2:
-						default:
-							pieceImg.setImage(Assets.whitePiece);
-							break;
-					}
-				}
-			}
+	private void switchPlayerTurn() {
+		player1scr.setText("Player1 - "+model.getScoreP1());
+		player2scr.setText("Player2 - "+model.getScoreP2());
+		currPlayerTurn = (currPlayerTurn==Player.PLAYER1)? Player.PLAYER2 : Player.PLAYER1;
+		currentPlayerImg.setImage((currPlayerTurn==Player.PLAYER1)?
+				SettingsController.player1Piece : SettingsController.player2Piece);
+		if (model.cantMove(Player.PLAYER1) && model.cantMove(Player.PLAYER2))
+			endGame();
+		else if (model.cantMove(currPlayerTurn)) {
+			showAlertCantMove(currPlayerTurn);
+			switchPlayerTurn();
+		}
 	}
 
+	// refresh boardview
+	private void refreshBoardView() {
+		for (int i = 0; i < BOARD_SIZE; i++) {
+			for (int j = 0; j < BOARD_SIZE; j++) {
+				Cell currCell = model.getCellAt(new GamePos(i + 1, j + 1));
+				// grid children are sorted by coulmn and then row
+				ImageView pieceImg = (ImageView) (getNodeFromGridPane(grid, j, i));
+				setPieceImgByCell(pieceImg,currCell);
+			}
+		}
+	}
+
+	// handle method to set imageview to selected player piece
+	private void setPieceImgByCell(ImageView image, Cell cell) {
+		switch (cell) {
+			case EMPTY:
+				image.setImage(Assets.blank);
+				break;
+			case PLAYER1:
+				image.setImage(SettingsController.player1Piece);
+				break;
+			case PLAYER2:
+			default:
+				image.setImage(SettingsController.player2Piece);
+				break;
+		}
+	}
+	// handle method to get correct image from gridview board
 	private Node getNodeFromGridPane(GridPane gridPane, int col, int row) {
 		for (Node node : gridPane.getChildren()) {
 			if (GridPane.getColumnIndex(node) == col && GridPane.getRowIndex(node) == row && node instanceof ImageView) {
@@ -171,18 +191,6 @@ public class Controller {
 			}
 		}
 		return null;
-	}
-	private void switchPlayerTurn() {
-		player1scr.setText("Player1 - "+model.getScoreP1());
-		player2scr.setText("Player2 - "+model.getScoreP2());
-		currPlayerTurn = (currPlayerTurn==Player.PLAYER1)? Player.PLAYER2 : Player.PLAYER1;
-		currentPlayerImg.setImage((currPlayerTurn==Player.PLAYER1)? Assets.blackPiece : Assets.whitePiece);
-		if (model.cantMove(Player.PLAYER1) && model.cantMove(Player.PLAYER2))
-			endGame();
-		else if (model.cantMove(currPlayerTurn)) {
-			showAlertCantMove(currPlayerTurn);
-			switchPlayerTurn();
-		}
 	}
 
 	private void showAlertCantMove(Player player) {
@@ -193,7 +201,6 @@ public class Controller {
 		alert.setContentText("The turn passes to the other player");
 		alert.showAndWait();
 	}
-
 	private void endGame() {
 		Alert alert = new Alert(Alert.AlertType.INFORMATION);
 		alert.setTitle("that's it!");
@@ -215,7 +222,6 @@ public class Controller {
 			quitGame();
 		}
 	}
-
 	private void quitGame() {
 		Stage stage = (Stage) borderPane.getScene().getWindow();
 		stage.close();
