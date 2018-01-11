@@ -1,16 +1,14 @@
-import javafx.beans.binding.Bindings;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-
+import javafx.stage.Stage;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Set;
 
 public class SettingsController {
+	@FXML
+	private Button cancelBtn;
 	@FXML
 	private Button saveBtn;
 	@FXML
@@ -22,32 +20,39 @@ public class SettingsController {
 	@FXML
 	private ImageView player2PieceImg;
 
-	public final static int MAX_BOARD_SIZE = 20;
-	public final static int MIN_BOARD_SIZE = 4;
-	public final static int DEFAULT_BOARD_SIZE = 8;
+	private final static int MAX_BOARD_SIZE = 20;
+	private final static int MIN_BOARD_SIZE = 4;
+	private final static int DEFAULT_BOARD_SIZE = 8;
+	private final static int DEFAULT_PIECE_P1 = 0;
+	private final static int DEFAULT_PIECE_P2 = 1;
 
 	//SETTINGS TO LOAD
-	// TODO: change values only on save btn click
 	public static int boardSize = DEFAULT_BOARD_SIZE;
 	public static int player1PieceIndex = 0;
 	public static int player2PieceIndex = 1;
 
-	//make in main on load
-	public static Image player1Piece = Assets.getPiecesList().get(player1PieceIndex);
-	public static Image player2Piece = Assets.getPiecesList().get(player2PieceIndex);
-
 	public void initialize() {
+		// load configuration
+		loadSettings();
+
 		//init slider
 		boardSizeSlider.setMax(MAX_BOARD_SIZE);
 		boardSizeSlider.setMin(MIN_BOARD_SIZE);
-		boardSizeSlider.setValue(DEFAULT_BOARD_SIZE);
+		boardSizeSlider.setValue(boardSize);
+		//init slider label
+		boardSizelbl.setText(String.valueOf(boardSize));
 
-		//init image
-		player1PieceImg.setImage(player1Piece);
-		player2PieceImg.setImage(player2Piece);
+		//init images
+		if (player1PieceIndex < Assets.getPiecesListSize())
+			player1PieceImg.setImage(Assets.getPiecesList().get(player1PieceIndex));
+		else
+			player1PieceImg.setImage(Assets.getPiecesList().get(DEFAULT_PIECE_P1));
+		if (player2PieceIndex < Assets.getPiecesListSize())
+			player2PieceImg.setImage(Assets.getPiecesList().get(player2PieceIndex));
+		else
+			player2PieceImg.setImage(Assets.getPiecesList().get(DEFAULT_PIECE_P2));
 
-		// load configuration
-
+		//set image and slider actions
 		player1PieceImg.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
 			nextPiece(Player.PLAYER1);
 			player1PieceImg.setImage(Assets.getPiecesList().get(player1PieceIndex));
@@ -58,15 +63,30 @@ public class SettingsController {
 			player2PieceImg.setImage(Assets.getPiecesList().get(player2PieceIndex));
 			event.consume();
 		});
-
 		boardSizeSlider.valueProperty().addListener((obs, oldval, newVal) -> {
 			boardSizeSlider.setValue(Math.round(newVal.doubleValue()));
 			boardSize = (int) boardSizeSlider.getValue();
 			boardSizelbl.setText(String.valueOf(boardSize));
 		});
+
+		//set button actions
+		saveBtn.setOnAction((event -> {
+			saveSettings();
+			Stage stage = (Stage) saveBtn.getScene().getWindow();
+			stage.close();
+		}));
+		cancelBtn.setOnAction((event -> {
+			loadSettings();
+			Stage stage = (Stage) cancelBtn.getScene().getWindow();
+			stage.close();
+		}));
+
+		//TODO: close window with X fix
+
+
 	}
 
-	public void loadSettings() {
+	public static void loadSettings() {
 		try {
 			SettingsLoader.loadSettings();
 			boardSize = SettingsLoader.getSetting("boardSize");
@@ -74,14 +94,16 @@ public class SettingsController {
 			player2PieceIndex = SettingsLoader.getSetting("p2piece");
 		} catch (FileNotFoundException e) {
 			System.out.println("settings file not found");
+			boardSize = DEFAULT_BOARD_SIZE;
+			player1PieceIndex = DEFAULT_PIECE_P1;
+			player2PieceIndex = DEFAULT_PIECE_P2;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	public void saveSettings() {
+	private void saveSettings() {
 		try {
-			//TODO: update settings in class?
 			SettingsLoader.setSetting("boardSize", boardSize);
 			SettingsLoader.setSetting("p1piece", player1PieceIndex);
 			SettingsLoader.setSetting("p2piece", player2PieceIndex);

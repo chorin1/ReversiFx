@@ -1,20 +1,21 @@
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import java.util.Optional;
 
 public class GameController {
-	public final int BOARD_SIZE = 8;
-	public static final int CELL_MAX_SIZE = 80;
-    public static final int CELL_MIN_SIZE = 30;
-	public static final int player1Piece = 0;
-	public static final int player2Piece = 1;
+	private static final int CELL_MAX_SIZE = 80;
+    private static final int CELL_MIN_SIZE = 30;
 
 	@FXML
 	private Text player1scr;
@@ -25,16 +26,21 @@ public class GameController {
 	@FXML
 	private ImageView currentPlayerImg;
 
-	private GridPane grid = new GridPane();
-	private Model model = new Model(BOARD_SIZE);
-	private Player currPlayerTurn = Player.PLAYER1;
+	private GridPane grid;
+	private Model model;
+	private Player currPlayerTurn;
 
-	//initialize all view objects
+
 	public void initialize() {
 		/* check that graphics are available
 		if (Assets.blank==null || Assets.blackPiece==null || Assets.whitePiece==null)
 			throw new IllegalArgumentException("required image assets missing!");
 		*/
+		// set up model
+		model = new Model(SettingsController.boardSize);
+		currPlayerTurn = Player.PLAYER1;
+
+		grid = new GridPane();
 		//set up top menu
 		MenuBar menuBar = new MenuBar();
 		initMenu(menuBar);
@@ -51,13 +57,13 @@ public class GameController {
 		player2scr.setText("Player2 - "+model.getScoreP2());
 
 		//set up starting player piece image
-		currentPlayerImg.setImage(SettingsController.player1Piece);
+		currentPlayerImg.setImage(Assets.getPiecesList().get(SettingsController.player1PieceIndex));
 	}
 	private void initBoard() {
 		grid.getStyleClass().add("game-grid");
 
 		// set up board constraints
-		for (int i = 0; i < BOARD_SIZE; i++) {
+		for (int i = 0; i < model.getBoardSize(); i++) {
 			ColumnConstraints columnStraints = new ColumnConstraints();
 			RowConstraints rowStraints = new RowConstraints();
 			columnStraints.setMaxWidth(CELL_MAX_SIZE);
@@ -74,8 +80,8 @@ public class GameController {
 		grid.setAlignment(Pos.CENTER);
 
 		// add pane and imageview for each cell
-		for (int i = 0; i < BOARD_SIZE; i++) {
-			for (int j = 0; j < BOARD_SIZE; j++) {
+		for (int i = 0; i < model.getBoardSize(); i++) {
+			for (int j = 0; j < model.getBoardSize(); j++) {
 				Pane pane = addPane(i,j);
 				ImageView pieceImg = addPieceImage(i,j);
 				grid.add(pane, i, j);
@@ -90,11 +96,14 @@ public class GameController {
 		Menu gameMenu = new Menu("Game");
 		Menu aboutMenu = new Menu("About");
 		aboutMenu.setOnAction(event -> {
-
+		//TODO: make about window
 		});
 		MenuItem newGame = new MenuItem("New Game");
 		newGame.setOnAction(event-> resetGame());
 		MenuItem settings = new MenuItem("Settings");
+		settings.setOnAction(event-> {
+			openSettings();
+		});
 		MenuItem quit = new MenuItem("Quit");
 		quit.setOnAction(event-> quitGame());
 		gameMenu.getItems().addAll(newGame, settings, quit);
@@ -117,19 +126,19 @@ public class GameController {
 		pane.getStyleClass().add("game-grid-cell");
 		if (i==0 && j==0)
 			pane.getStyleClass().add("top-left");
-		else if (i == 0 && j!=BOARD_SIZE-1)
+		else if (i == 0 && j!=model.getBoardSize()-1)
 			pane.getStyleClass().add("first-column");
-		else if (j == 0 && i!=BOARD_SIZE-1)
+		else if (j == 0 && i!=model.getBoardSize()-1)
 			pane.getStyleClass().add("first-row");
-		else if (i==BOARD_SIZE-1 && j==BOARD_SIZE-1)
+		else if (i==model.getBoardSize()-1 && j==model.getBoardSize()-1)
 			pane.getStyleClass().add("bot-right");
-		else if (i==0 && j==BOARD_SIZE-1)
+		else if (i==0 && j==model.getBoardSize()-1)
 			pane.getStyleClass().add("bot-left");
-		else if (i!=BOARD_SIZE-1 && j==BOARD_SIZE-1)
+		else if (i!=model.getBoardSize()-1 && j==model.getBoardSize()-1)
 			pane.getStyleClass().add("last-row");
-		else if (i==BOARD_SIZE-1 && j!=0)
+		else if (i==model.getBoardSize()-1 && j!=0)
 			pane.getStyleClass().add("last-column");
-		else if (j==0 && i==BOARD_SIZE-1)
+		else if (j==0 && i==model.getBoardSize()-1)
 			pane.getStyleClass().add("top-right");
 		return pane;
 	}
@@ -143,11 +152,13 @@ public class GameController {
 		}
 	}
 	private void switchPlayerTurn() {
+		//TODO: add another text for score
 		player1scr.setText("Player1 - "+model.getScoreP1());
 		player2scr.setText("Player2 - "+model.getScoreP2());
 		currPlayerTurn = (currPlayerTurn==Player.PLAYER1)? Player.PLAYER2 : Player.PLAYER1;
 		currentPlayerImg.setImage((currPlayerTurn==Player.PLAYER1)?
-				SettingsController.player1Piece : SettingsController.player2Piece);
+				Assets.getPiecesList().get(SettingsController.player1PieceIndex) :
+				Assets.getPiecesList().get(SettingsController.player2PieceIndex));
 		if (model.cantMove(Player.PLAYER1) && model.cantMove(Player.PLAYER2))
 			endGame();
 		else if (model.cantMove(currPlayerTurn)) {
@@ -158,8 +169,8 @@ public class GameController {
 
 	// refresh boardview
 	private void refreshBoardView() {
-		for (int i = 0; i < BOARD_SIZE; i++) {
-			for (int j = 0; j < BOARD_SIZE; j++) {
+		for (int i = 0; i < model.getBoardSize(); i++) {
+			for (int j = 0; j < model.getBoardSize(); j++) {
 				Cell currCell = model.getCellAt(new GamePos(i + 1, j + 1));
 				// grid children are sorted by coulmn and then row
 				ImageView pieceImg = (ImageView) (getNodeFromGridPane(grid, j, i));
@@ -175,11 +186,11 @@ public class GameController {
 				image.setImage(Assets.blank);
 				break;
 			case PLAYER1:
-				image.setImage(SettingsController.player1Piece);
+				image.setImage(Assets.getPiecesList().get(SettingsController.player1PieceIndex));
 				break;
 			case PLAYER2:
 			default:
-				image.setImage(SettingsController.player2Piece);
+				image.setImage(Assets.getPiecesList().get(SettingsController.player2PieceIndex));
 				break;
 		}
 	}
@@ -227,9 +238,21 @@ public class GameController {
 		stage.close();
 	}
 	private void resetGame() {
-		model = new Model(BOARD_SIZE);
-		grid = new GridPane();
-		currPlayerTurn = Player.PLAYER1;
 		initialize();
+	}
+	private void openSettings() {
+		try {
+			Parent settings = FXMLLoader.load(getClass().getResource("SettingsLayout.fxml"));
+			Scene settingsScene = new Scene(settings, 300, 400);
+			Stage popup = new Stage();
+			popup.setScene(settingsScene);
+			popup.initModality(Modality.WINDOW_MODAL);
+			popup.initOwner((Stage)borderPane.getScene().getWindow());
+			popup.setTitle("Settings");
+			popup.setResizable(false);
+			popup.show();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }

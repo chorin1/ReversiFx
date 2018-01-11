@@ -5,18 +5,15 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class Main extends Application {
-
     @Override
     public void start(Stage primaryStage) throws Exception {
         try {
+            SettingsController.loadSettings();
             Parent root = FXMLLoader.load(getClass().getResource("GameLayout.fxml"));
-            Parent settings = FXMLLoader.load(getClass().getResource("SettingsLayout.fxml"));
             primaryStage.setTitle("ReversiFx");
             Scene gameScene = new Scene(root, 1280, 720);
-            Scene settingsScene = new Scene(settings, 300, 400);
             gameScene.getStylesheets().add("game.css");
-            //primaryStage.setScene(gameScene);
-            primaryStage.setScene(settingsScene);
+            primaryStage.setScene(gameScene);
             primaryStage.show();
         } catch (Exception e) {
             e.printStackTrace();
