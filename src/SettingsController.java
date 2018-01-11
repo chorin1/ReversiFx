@@ -6,6 +6,10 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Set;
+
 public class SettingsController {
 	@FXML
 	private Button saveBtn;
@@ -23,6 +27,7 @@ public class SettingsController {
 	public final static int DEFAULT_BOARD_SIZE = 8;
 
 	//SETTINGS TO LOAD
+	// TODO: change values only on save btn click
 	public static int boardSize = DEFAULT_BOARD_SIZE;
 	public static int player1PieceIndex = 0;
 	public static int player2PieceIndex = 1;
@@ -61,6 +66,31 @@ public class SettingsController {
 		});
 	}
 
+	public void loadSettings() {
+		try {
+			SettingsLoader.loadSettings();
+			boardSize = SettingsLoader.getSetting("boardSize");
+			player1PieceIndex = SettingsLoader.getSetting("p1piece");
+			player2PieceIndex = SettingsLoader.getSetting("p2piece");
+		} catch (FileNotFoundException e) {
+			System.out.println("settings file not found");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void saveSettings() {
+		try {
+			//TODO: update settings in class?
+			SettingsLoader.setSetting("boardSize", boardSize);
+			SettingsLoader.setSetting("p1piece", player1PieceIndex);
+			SettingsLoader.setSetting("p2piece", player2PieceIndex);
+			SettingsLoader.saveSettings();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 	private void nextPiece(Player player) {
 		if (player == Player.PLAYER1) {
 			player1PieceIndex = Assets.getNextIndex(player1PieceIndex);
@@ -72,6 +102,4 @@ public class SettingsController {
 				player2PieceIndex = Assets.getNextIndex(player2PieceIndex);
 		}
 	}
-
-
 }

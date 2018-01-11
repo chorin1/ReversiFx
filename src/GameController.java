@@ -10,7 +10,7 @@ import javafx.stage.Stage;
 import java.util.Optional;
 
 public class GameController {
-	public final int BOARD_SIZE = 4;
+	public final int BOARD_SIZE = 8;
 	public static final int CELL_MAX_SIZE = 80;
     public static final int CELL_MIN_SIZE = 30;
 	public static final int player1Piece = 0;
