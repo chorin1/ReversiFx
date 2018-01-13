@@ -1,21 +1,23 @@
+package com.ReversiFx.controllersViews;
+
+import com.ReversiFx.assets.Assets;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
+import javafx.geometry.VPos;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import java.util.Optional;
 
+import com.ReversiFx.model.*;
+
 public class GameController {
-	private static final int CELL_MAX_SIZE = 80;
-    private static final int CELL_MIN_SIZE = 30;
+	private static int CELL_MAX_SIZE = 80;
+    private static int CELL_MIN_SIZE = 30;
 
 	@FXML
 	private Text player1scr;
@@ -29,16 +31,10 @@ public class GameController {
 	private GridPane grid;
 	private Model model;
 	private Player currPlayerTurn;
-
+	private Stage settingsPopupStage;
+	private SettingsController settingsController;
 
 	public void initialize() {
-		/* check that graphics are available
-		if (Assets.blank==null || Assets.blackPiece==null || Assets.whitePiece==null)
-			throw new IllegalArgumentException("required image assets missing!");
-		*/
-		// set up model
-		model = new Model(SettingsController.boardSize);
-		currPlayerTurn = Player.PLAYER1;
 
 		grid = new GridPane();
 		//set up top menu
@@ -49,17 +45,11 @@ public class GameController {
 		borderPane.setTop(menuBar);
 		borderPane.setCenter(grid);
 
-		// set up game board
-		initBoard();
+		CELL_MAX_SIZE = Math.min(80,(int)(Assets.getInstance().blank.getWidth()*1.5));
 
-		// set up score labels
-		player1scr.setText("Player1 - "+model.getScoreP1());
-		player2scr.setText("Player2 - "+model.getScoreP2());
-
-		//set up starting player piece image
-		currentPlayerImg.setImage(Assets.getPiecesList().get(SettingsController.player1PieceIndex));
 	}
-	private void initBoard() {
+
+	public void initBoard() {
 		grid.getStyleClass().add("game-grid");
 
 		// set up board constraints
@@ -86,31 +76,39 @@ public class GameController {
 				ImageView pieceImg = addPieceImage(i,j);
 				grid.add(pane, i, j);
 				grid.add(pieceImg,i,j);
-				grid.setHalignment(pieceImg, HPos.CENTER);
-				pieceImg.fitWidthProperty().bind(pane.widthProperty());
-				pieceImg.fitHeightProperty().bind(pane.heightProperty());
+				GridPane.setHalignment(pieceImg, HPos.CENTER);
+				GridPane.setValignment(pieceImg, VPos.CENTER);
+				// allow windows resize
+				pieceImg.fitWidthProperty().bind(pane.widthProperty().subtract(10));
+				pieceImg.fitHeightProperty().bind(pane.heightProperty().subtract(10));
 			}
 		}
+
+		// set up score labels
+		updateScore();
+
+		//set up starting player piece image
+		currentPlayerImg.setImage(Assets.getInstance().getPiecesList().get(settingsController.getPlayer1PieceIndex()));
+		currPlayerTurn = Player.PLAYER1;
 	}
 	private void initMenu(MenuBar menuBar) {
 		Menu gameMenu = new Menu("Game");
-		Menu aboutMenu = new Menu("About");
-		aboutMenu.setOnAction(event -> {
-		//TODO: make about window
-		});
 		MenuItem newGame = new MenuItem("New Game");
-		newGame.setOnAction(event-> resetGame());
 		MenuItem settings = new MenuItem("Settings");
-		settings.setOnAction(event-> {
-			openSettings();
-		});
 		MenuItem quit = new MenuItem("Quit");
+		Menu aboutMenu = new Menu("About");
+		MenuItem aboutItem = new MenuItem("About");
+		aboutItem.setOnAction(event -> showAbout());
+		newGame.setOnAction(event-> resetGame());
+		settings.setOnAction(event-> openSettings());
 		quit.setOnAction(event-> quitGame());
+
 		gameMenu.getItems().addAll(newGame, settings, quit);
+		aboutMenu.getItems().add(aboutItem);
 		menuBar.getMenus().addAll(gameMenu,aboutMenu);
 	}
 	private ImageView addPieceImage(int i, int j) {
-		Cell currCell = model.getCellAt(new GamePos(i+1,j+1));
+		boardCell currCell = model.getCellAt(new GamePos(i+1,j+1));
 		ImageView pieceImg = new ImageView();
 		setPieceImgByCell(pieceImg,currCell);
 		pieceImg.setOnMouseReleased(e -> move(currPlayerTurn,j+1,i+1));
@@ -142,23 +140,24 @@ public class GameController {
 			pane.getStyleClass().add("top-right");
 		return pane;
 	}
-
+	private void updateScore() {
+		player1scr.setText(String.valueOf(model.getScoreP1()));
+		player2scr.setText(String.valueOf(model.getScoreP2()));
+	}
 	// make a move on board
 	private void move(Player player, int x, int y) {
 		if (model.place(player, x,y)) {
 			refreshBoardView();
-			System.out.println(model);
+			//System.out.println(model);
 			switchPlayerTurn();
 		}
 	}
 	private void switchPlayerTurn() {
-		//TODO: add another text for score
-		player1scr.setText("Player1 - "+model.getScoreP1());
-		player2scr.setText("Player2 - "+model.getScoreP2());
+		updateScore();
 		currPlayerTurn = (currPlayerTurn==Player.PLAYER1)? Player.PLAYER2 : Player.PLAYER1;
 		currentPlayerImg.setImage((currPlayerTurn==Player.PLAYER1)?
-				Assets.getPiecesList().get(SettingsController.player1PieceIndex) :
-				Assets.getPiecesList().get(SettingsController.player2PieceIndex));
+				Assets.getInstance().getPiecesList().get(settingsController.getPlayer1PieceIndex()) :
+				Assets.getInstance().getPiecesList().get(settingsController.getPlayer2PieceIndex()));
 		if (model.cantMove(Player.PLAYER1) && model.cantMove(Player.PLAYER2))
 			endGame();
 		else if (model.cantMove(currPlayerTurn)) {
@@ -171,7 +170,7 @@ public class GameController {
 	private void refreshBoardView() {
 		for (int i = 0; i < model.getBoardSize(); i++) {
 			for (int j = 0; j < model.getBoardSize(); j++) {
-				Cell currCell = model.getCellAt(new GamePos(i + 1, j + 1));
+				boardCell currCell = model.getCellAt(new GamePos(i + 1, j + 1));
 				// grid children are sorted by coulmn and then row
 				ImageView pieceImg = (ImageView) (getNodeFromGridPane(grid, j, i));
 				setPieceImgByCell(pieceImg,currCell);
@@ -180,17 +179,17 @@ public class GameController {
 	}
 
 	// handle method to set imageview to selected player piece
-	private void setPieceImgByCell(ImageView image, Cell cell) {
+	private void setPieceImgByCell(ImageView image, boardCell cell) {
 		switch (cell) {
 			case EMPTY:
-				image.setImage(Assets.blank);
+				image.setImage(Assets.getInstance().blank);
 				break;
 			case PLAYER1:
-				image.setImage(Assets.getPiecesList().get(SettingsController.player1PieceIndex));
+				image.setImage(Assets.getInstance().getPiecesList().get(settingsController.getPlayer1PieceIndex()));
 				break;
 			case PLAYER2:
 			default:
-				image.setImage(Assets.getPiecesList().get(SettingsController.player2PieceIndex));
+				image.setImage(Assets.getInstance().getPiecesList().get(settingsController.getPlayer2PieceIndex()));
 				break;
 		}
 	}
@@ -217,7 +216,7 @@ public class GameController {
 		alert.setTitle("that's it!");
 		if (model.getScoreP1() > model.getScoreP2())
 			alert.setHeaderText("Game Over!\nThe winner is: Player1");
-		if (model.getScoreP1() < model.getScoreP2())
+		else if (model.getScoreP1() < model.getScoreP2())
 			alert.setHeaderText("Game Over!\nThe winner is: Player2");
 		else
 			alert.setHeaderText("Game Over!\nIt's a tie!");
@@ -238,21 +237,32 @@ public class GameController {
 		stage.close();
 	}
 	private void resetGame() {
+		model = new Model(settingsController.getBoardSize());
 		initialize();
+		initBoard();
 	}
 	private void openSettings() {
 		try {
-			Parent settings = FXMLLoader.load(getClass().getResource("SettingsLayout.fxml"));
-			Scene settingsScene = new Scene(settings, 300, 400);
-			Stage popup = new Stage();
-			popup.setScene(settingsScene);
-			popup.initModality(Modality.WINDOW_MODAL);
-			popup.initOwner((Stage)borderPane.getScene().getWindow());
-			popup.setTitle("Settings");
-			popup.setResizable(false);
-			popup.show();
+			settingsPopupStage.show();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	private void showAbout() {
+		Alert alert = new Alert(Alert.AlertType.INFORMATION);
+		alert.setTitle("About");
+		alert.setHeaderText("ReversiFX");
+		alert.setContentText("Ver. 0.6\nA game by Ben C.");
+		alert.setGraphic(new ImageView(Assets.getInstance().aboutImg));
+		alert.showAndWait();
+	}
+
+	public void initSettings(SettingsController controller, Stage stage) {
+		settingsPopupStage = stage;
+		settingsController = controller;
+	}
+
+	public void setModel (Model model) {
+		this.model = model;
 	}
 }

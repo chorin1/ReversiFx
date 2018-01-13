@@ -11,7 +11,7 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.layout.HBox?>
 <BorderPane xmlns:fx="http://javafx.com/fxml/1"
-            xmlns="http://javafx.com/javafx/9.0.1" fx:controller="SettingsController">
+            xmlns="http://javafx.com/javafx/9.0.1" fx:controller="com.ReversiFx.controllersViews.SettingsController">
     <top>
         <StackPane><padding><Insets top="10" bottom="15"></Insets></padding>
         <Text text="Settings" textAlignment="CENTER">
@@ -25,14 +25,16 @@
         <StackPane><padding><Insets top="15" right="50" bottom="10" left="50"></Insets></padding>
             <VBox alignment="TOP_CENTER">
                 <HBox alignment="CENTER">
-                <Text text="Board Size: " textAlignment="CENTER"></Text>
-                <Label text= "8" fx:id="boardSizelbl" textAlignment="CENTER"></Label>
+                <Text text="Board Size: " textAlignment="CENTER">
+                    <font><Font name="Arial Rounded MT Bold" size="16.0" /></font></Text>
+                <Label text= "8" fx:id="boardSizelbl" textAlignment="CENTER">
+                    <font><Font name="Arial Rounded MT Bold" size="16.0" /></font></Label>
                 </HBox>
                 <Slider fx:id="boardSizeSlider" majorTickUnit="1"
                         blockIncrement="1.0" max="20.0" min="4.0" value="8.0"/>
-                <Text text="Player 1 Piece:"></Text>
+                <Text text="Player 1 Piece:"><font><Font name="Arial Rounded MT Bold" size="16.0" /></font></Text>
                 <ImageView fx:id="player1PieceImg"></ImageView>
-                <Text text="Player 2 Piece:"></Text>
+                <Text text="Player 2 Piece:"><font><Font name="Arial Rounded MT Bold" size="16.0" /></font></Text>
                 <ImageView fx:id="player2PieceImg"></ImageView>
 
             </VBox>

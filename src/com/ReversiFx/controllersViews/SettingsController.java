@@ -1,3 +1,6 @@
+package com.ReversiFx.controllersViews;
+
+import com.ReversiFx.assets.Assets;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
@@ -5,6 +8,9 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+
+import com.ReversiFx.model.Player;
+import com.ReversiFx.settingsFromFile.*;
 
 public class SettingsController {
 	@FXML
@@ -20,16 +26,16 @@ public class SettingsController {
 	@FXML
 	private ImageView player2PieceImg;
 
-	private final static int MAX_BOARD_SIZE = 20;
-	private final static int MIN_BOARD_SIZE = 4;
-	private final static int DEFAULT_BOARD_SIZE = 8;
-	private final static int DEFAULT_PIECE_P1 = 0;
-	private final static int DEFAULT_PIECE_P2 = 1;
+	private final int MAX_BOARD_SIZE = 20;
+	private final int MIN_BOARD_SIZE = 4;
+	private final int DEFAULT_BOARD_SIZE = 8;
+	private final int DEFAULT_PIECE_P1 = 0;
+	private final int DEFAULT_PIECE_P2 = 1;
 
 	//SETTINGS TO LOAD
-	public static int boardSize = DEFAULT_BOARD_SIZE;
-	public static int player1PieceIndex = 0;
-	public static int player2PieceIndex = 1;
+	private int boardSize = DEFAULT_BOARD_SIZE;
+	private int player1PieceIndex = 0;
+	private int player2PieceIndex = 1;
 
 	public void initialize() {
 		// load configuration
@@ -43,24 +49,24 @@ public class SettingsController {
 		boardSizelbl.setText(String.valueOf(boardSize));
 
 		//init images
-		if (player1PieceIndex < Assets.getPiecesListSize())
-			player1PieceImg.setImage(Assets.getPiecesList().get(player1PieceIndex));
+		if (player1PieceIndex < Assets.getInstance().getPiecesListSize())
+			player1PieceImg.setImage(Assets.getInstance().getPiecesList().get(player1PieceIndex));
 		else
-			player1PieceImg.setImage(Assets.getPiecesList().get(DEFAULT_PIECE_P1));
-		if (player2PieceIndex < Assets.getPiecesListSize())
-			player2PieceImg.setImage(Assets.getPiecesList().get(player2PieceIndex));
+			player1PieceImg.setImage(Assets.getInstance().getPiecesList().get(DEFAULT_PIECE_P1));
+		if (player2PieceIndex < Assets.getInstance().getPiecesListSize())
+			player2PieceImg.setImage(Assets.getInstance().getPiecesList().get(player2PieceIndex));
 		else
-			player2PieceImg.setImage(Assets.getPiecesList().get(DEFAULT_PIECE_P2));
+			player2PieceImg.setImage(Assets.getInstance().getPiecesList().get(DEFAULT_PIECE_P2));
 
 		//set image and slider actions
 		player1PieceImg.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
 			nextPiece(Player.PLAYER1);
-			player1PieceImg.setImage(Assets.getPiecesList().get(player1PieceIndex));
+			player1PieceImg.setImage(Assets.getInstance().getPiecesList().get(player1PieceIndex));
 			event.consume();
 		});
 		player2PieceImg.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
 			nextPiece(Player.PLAYER2);
-			player2PieceImg.setImage(Assets.getPiecesList().get(player2PieceIndex));
+			player2PieceImg.setImage(Assets.getInstance().getPiecesList().get(player2PieceIndex));
 			event.consume();
 		});
 		boardSizeSlider.valueProperty().addListener((obs, oldval, newVal) -> {
@@ -77,16 +83,20 @@ public class SettingsController {
 		}));
 		cancelBtn.setOnAction((event -> {
 			loadSettings();
+			initialize();
 			Stage stage = (Stage) cancelBtn.getScene().getWindow();
 			stage.close();
 		}));
 
-		//TODO: close window with X fix
+		//TODO: close window with X fix, save previous settings!
 
 
 	}
 
-	public static void loadSettings() {
+	private void refreshStage() {
+
+	}
+	public void loadSettings() {
 		try {
 			SettingsLoader.loadSettings();
 			boardSize = SettingsLoader.getSetting("boardSize");
@@ -115,13 +125,24 @@ public class SettingsController {
 
 	private void nextPiece(Player player) {
 		if (player == Player.PLAYER1) {
-			player1PieceIndex = Assets.getNextIndex(player1PieceIndex);
+			player1PieceIndex = Assets.getInstance().getNextIndex(player1PieceIndex);
 			if (player1PieceIndex==player2PieceIndex)
-				player1PieceIndex = Assets.getNextIndex(player1PieceIndex);
+				player1PieceIndex = Assets.getInstance().getNextIndex(player1PieceIndex);
 		} else {
-			player2PieceIndex = Assets.getNextIndex(player2PieceIndex);
+			player2PieceIndex = Assets.getInstance().getNextIndex(player2PieceIndex);
 			if (player1PieceIndex==player2PieceIndex)
-				player2PieceIndex = Assets.getNextIndex(player2PieceIndex);
+				player2PieceIndex = Assets.getInstance().getNextIndex(player2PieceIndex);
 		}
 	}
+
+	public int getBoardSize() {
+		return boardSize;
+	}
+	public int getPlayer1PieceIndex() {
+		return player1PieceIndex;
+	}
+	public int getPlayer2PieceIndex() {
+		return player2PieceIndex;
+	}
+
 }

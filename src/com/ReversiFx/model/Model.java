@@ -1,3 +1,4 @@
+package com.ReversiFx.model;
 import java.util.HashSet;
 
 public class Model {
@@ -9,7 +10,7 @@ public class Model {
 	private final static int[] ROW_OFFSET_ARR = {-1, -1, -1,  0,  0,  1,  1,  1};
 	private final static int[] COL_OFFSET_ARR = {-1,  0,  1, -1,  1, -1,  0,  1};
 
-	Model(int boardSize) {
+	public Model(int boardSize) {
 		board = new Board(boardSize);
 		updatePossibleMoves(Player.PLAYER1);
 		updatePossibleMoves(Player.PLAYER2);
@@ -37,40 +38,40 @@ public class Model {
 	}
 
 	private void flip(int x, int y) {
-		Cell currPiece = getCellAt(x,y);
+		boardCell currPiece = getCellAt(x,y);
 		switch (currPiece) {
 			case EMPTY:
 				return;
 			case PLAYER1:
-				setCellAt(x,y,Cell.PLAYER2);
+				setCellAt(x,y, boardCell.PLAYER2);
 				scoreP1--;
 				scoreP2++;
 				break;
 			case PLAYER2:
-				setCellAt(x,y,Cell.PLAYER1);
+				setCellAt(x,y, boardCell.PLAYER1);
 				scoreP2--;
 				scoreP1++;
 				break;
 		}
 	}
 
-	public Cell getCellAt(GamePos pos) {
+	public boardCell getCellAt(GamePos pos) {
 		if (isOutOfBounds(pos))
 			return null;
 		return board.getCellAt(pos.m_x-1, pos.m_y-1); //conversion from board to array
 	}
-	public Cell getCellAt(int x, int y) {
+	public boardCell getCellAt(int x, int y) {
 		if (isOutOfBounds(x,y))
 			return null;
 		return board.getCellAt(x-1, y-1); //conversion from board to array
 	}
 
-	private void setCellAt(GamePos pos, Cell piece) {
+	private void setCellAt(GamePos pos, boardCell piece) {
 		if (isOutOfBounds(pos))
 			System.out.println("Trying to set cell on out of bounds Pos");
 		board.setCellValue(pos.m_x - 1, pos.m_y - 1, piece);
 	}
-	private void setCellAt(int x, int y, Cell piece) {
+	private void setCellAt(int x, int y, boardCell piece) {
 		board.setCellValue(x - 1, y - 1, piece);
 	}
 
@@ -83,10 +84,10 @@ public class Model {
 	}
 
 	private boolean calcIsPossibleMove(Player player, int x, int y) {
-		if (getCellAt(x, y)!=Cell.EMPTY)
+		if (getCellAt(x, y)!= boardCell.EMPTY)
 			return false;
-		Cell thisPiece = (player==Player.PLAYER1)? Cell.PLAYER1 : Cell.PLAYER2;
-		Cell oppPiece = (player==Player.PLAYER1)? Cell.PLAYER2 : Cell.PLAYER1;
+		boardCell thisPiece = (player==Player.PLAYER1)? boardCell.PLAYER1 : boardCell.PLAYER2;
+		boardCell oppPiece = (player==Player.PLAYER1)? boardCell.PLAYER2 : boardCell.PLAYER1;
 		// for each offset
 		for (int i=0; i<8; i++) {
 			int currX = x + ROW_OFFSET_ARR[i];
@@ -107,18 +108,18 @@ public class Model {
 	}
 
 	public boolean place(Player player, int x, int y) {
-		if (getCellAt(x, y)!=Cell.EMPTY || !isPossibleMove(player,x,y)) {
+		if (getCellAt(x, y)!= boardCell.EMPTY || !isPossibleMove(player,x,y)) {
 			System.out.println("illegal move - (" +x + "," + y +")");
 			return false;
 		}
-		Cell thisPlayerPiece, oppPiece;
+		boardCell thisPlayerPiece, oppPiece;
 		if (player==Player.PLAYER1) {
-			thisPlayerPiece = Cell.PLAYER1;
-			oppPiece = Cell.PLAYER2;
+			thisPlayerPiece = boardCell.PLAYER1;
+			oppPiece = boardCell.PLAYER2;
 			scoreP1++;
 		} else {
-			thisPlayerPiece = Cell.PLAYER2;
-			oppPiece = Cell.PLAYER1;
+			thisPlayerPiece = boardCell.PLAYER2;
+			oppPiece = boardCell.PLAYER1;
 			scoreP2++;
 		}
 		setCellAt(x,y,thisPlayerPiece);
@@ -128,7 +129,7 @@ public class Model {
 			int currY = y + COL_OFFSET_ARR[i];
 			boolean hasOppPieceBetween = false;
 			while (!isOutOfBounds(currX, currY)) {
-				Cell currPiece = getCellAt(currX,currY);
+				boardCell currPiece = getCellAt(currX,currY);
 				if (currPiece == oppPiece)
 					hasOppPieceBetween = true;
 				else if (currPiece == thisPlayerPiece && hasOppPieceBetween) {

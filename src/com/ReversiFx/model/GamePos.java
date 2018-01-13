@@ -1,12 +1,13 @@
+package com.ReversiFx.model;
 import java.util.Objects;
 public class GamePos {
 	public int m_x;
 	public int m_y;
-	GamePos(int x, int y) {
+	public GamePos(int x, int y) {
 		m_x=x;
 		m_y=y;
 	}
-	GamePos(GamePos other) {
+	public GamePos(GamePos other) {
 		m_x=other.m_x;
 		m_y=other.m_y;
 	}

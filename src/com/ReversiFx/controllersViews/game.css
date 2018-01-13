@@ -1,11 +1,11 @@
 .game-grid {
-    -fx-background-color: gray ;
-    -fx-background-image: url("img/damask-1920x1200-62.jpg");
+    -fx-background-color: gray;
+    -fx-background-image: url("../Assets/img/damask-1920x1200-62.jpg");
     -fx-background-size: 1920 1200;
     -fx-background-repeat: stretch;
 
     -fx-background-position: center center;
-    -fx-padding: 2 ;
+    -fx-padding: 2;
 }
 .game-grid-cell {
     -fx-background-color: black, green ;

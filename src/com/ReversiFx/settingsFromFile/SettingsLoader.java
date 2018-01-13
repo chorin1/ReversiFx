@@ -1,3 +1,5 @@
+package com.ReversiFx.settingsFromFile;
+
 import java.io.*;
 import java.util.Properties;
 
