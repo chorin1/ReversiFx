@@ -1,5 +1,5 @@
 package model;
-public enum boardCell {
+public enum BoardCell {
 	EMPTY,
 	PLAYER1,
 	PLAYER2

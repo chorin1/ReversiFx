@@ -108,7 +108,7 @@ public class GameController {
 		menuBar.getMenus().addAll(gameMenu,aboutMenu);
 	}
 	private ImageView addPieceImage(int i, int j) {
-		boardCell currCell = model.getCellAt(new GamePos(i+1,j+1));
+		BoardCell currCell = model.getCellAt(new GamePos(i+1,j+1));
 		ImageView pieceImg = new ImageView();
 		setPieceImgByCell(pieceImg,currCell);
 		pieceImg.setOnMouseReleased(e -> move(currPlayerTurn,j+1,i+1));
@@ -147,39 +147,42 @@ public class GameController {
 	// make a move on board
 	private void move(Player player, int x, int y) {
 		if (model.place(player, x,y)) {
-			refreshBoardView();
 			//System.out.println(model);
 			switchPlayerTurn();
 		}
 	}
+
 	private void switchPlayerTurn() {
-		updateScore();
 		currPlayerTurn = (currPlayerTurn==Player.PLAYER1)? Player.PLAYER2 : Player.PLAYER1;
+		refreshBoardView();
+		updateScore();
 		currentPlayerImg.setImage((currPlayerTurn==Player.PLAYER1)?
 				Assets.getInstance().getPiecesList().get(settingsController.getPlayer1PieceIndex()) :
 				Assets.getInstance().getPiecesList().get(settingsController.getPlayer2PieceIndex()));
+
+		// both players can't move
 		if (model.cantMove(Player.PLAYER1) && model.cantMove(Player.PLAYER2))
 			endGame();
+		// just one player cant move
 		else if (model.cantMove(currPlayerTurn)) {
 			showAlertCantMove(currPlayerTurn);
 			switchPlayerTurn();
 		}
 	}
-
 	// refresh boardview
 	private void refreshBoardView() {
 		for (int i = 0; i < model.getBoardSize(); i++) {
 			for (int j = 0; j < model.getBoardSize(); j++) {
-				boardCell currCell = model.getCellAt(new GamePos(i + 1, j + 1));
+				BoardCell currCell = model.getCellAt(new GamePos(i + 1, j + 1));
 				// grid children are sorted by coulmn and then row
-				ImageView pieceImg = (ImageView) (getNodeFromGridPane(grid, j, i));
+				ImageView pieceImg = (getImgFromGridpane(grid, j, i));
 				setPieceImgByCell(pieceImg,currCell);
 			}
 		}
 	}
 
 	// handle method to set imageview to selected player piece
-	private void setPieceImgByCell(ImageView image, boardCell cell) {
+	private void setPieceImgByCell(ImageView image, BoardCell cell) {
 		switch (cell) {
 			case EMPTY:
 				image.setImage(Assets.getInstance().blank);
@@ -194,10 +197,10 @@ public class GameController {
 		}
 	}
 	// handle method to get correct image from gridview board
-	private Node getNodeFromGridPane(GridPane gridPane, int col, int row) {
+	private ImageView getImgFromGridpane(GridPane gridPane, int col, int row) {
 		for (Node node : gridPane.getChildren()) {
 			if (GridPane.getColumnIndex(node) == col && GridPane.getRowIndex(node) == row && node instanceof ImageView) {
-				return node;
+				return (ImageView)node;
 			}
 		}
 		return null;
@@ -243,6 +246,8 @@ public class GameController {
 	}
 	private void openSettings() {
 		try {
+			// cancel changes if user closes window brutally (through 'X' bttn)
+			settingsPopupStage.setOnCloseRequest(event -> settingsController.cancelChanges());
 			settingsPopupStage.show();
 		} catch (Exception e) {
 			e.printStackTrace();

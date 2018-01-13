@@ -1,21 +1,13 @@
 package assets;
 
-import javafx.scene.control.Alert;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.image.PixelReader;
-import javafx.scene.image.WritableImage;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Priority;
-
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import javafx.application.Platform;
+import javafx.scene.control.*;
+import javafx.scene.image.*;
+import javafx.scene.layout.*;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
+
 
 // singleton class
 public class Assets {
@@ -41,7 +33,7 @@ public class Assets {
 			blank = new WritableImage(getLargestWidth(), getLargestHeight());
 		} catch (IllegalArgumentException e) {
 			assetLoadExceptionAlert(e);
-			System.exit(1);
+			Platform.exit();
 		}
 		// load optional elements
 		try {
@@ -50,7 +42,7 @@ public class Assets {
 			final Image roi = new Image("roi.png", photosMaxSize, photosMaxSize, true, true);
 			final Image yossi = new Image("yossi.png", photosMaxSize, photosMaxSize, true, true);
 
-			final Image aboutImg = new Image("weekendgone.jpg", 100, 100, true, true);
+			final Image aboutImg = new Image("weekendgone.jpg", 150, 150, true, true);
 			final Image icon = new Image("reversi-stabilne.png");
 
 			appImages.put("icon", icon);

@@ -2,28 +2,28 @@ package model;
 
 public class Board {
 	private final int m_boardSize;
-	private boardCell[] m_board;
+	private BoardCell[] m_board;
 
 	public Board(int boardSize) {
 		m_boardSize = boardSize;
-		m_board = new boardCell[m_boardSize * m_boardSize];
+		m_board = new BoardCell[m_boardSize * m_boardSize];
 		int center = m_boardSize / 2;
 		for (int i = 0; i < m_boardSize; i++) {
 			for (int j = 0; j < m_boardSize; j++) {
 				if ((j == center - 1 && i == center - 1) || (j == center && i == center))
-					setCellValue(i, j, boardCell.PLAYER2);
+					setCellValue(i, j, BoardCell.PLAYER2);
                 else if ((j == center - 1 && i == center) || (j == center && i == center - 1))
-					setCellValue(i, j, boardCell.PLAYER1);
+					setCellValue(i, j, BoardCell.PLAYER1);
                 else
-				setCellValue(i, j, boardCell.EMPTY);
+				setCellValue(i, j, BoardCell.EMPTY);
 			}
 		}
 	}
-	public void setCellValue(int x, int y, boardCell cell) {
+	public void setCellValue(int x, int y, BoardCell cell) {
 		m_board[x + y*m_boardSize] = cell;
 	}
 
-	public boardCell getCellAt(int x, int y) {
+	public BoardCell getCellAt(int x, int y) {
 		return m_board[x + y*m_boardSize];
 	}
 

@@ -24,7 +24,7 @@ public class Model {
 		HashSet<GamePos> possibleMoves = (player==Player.PLAYER1)? possibleMovesP1 : possibleMovesP2;
 		return possibleMoves.contains(pos);
 	}
-	private boolean isPossibleMove(Player player, int x, int y) {
+	public boolean isPossibleMove(Player player, int x, int y) {
 		return isPossibleMove(player,new GamePos(x,y));
 	}
 
@@ -38,40 +38,40 @@ public class Model {
 	}
 
 	private void flip(int x, int y) {
-		boardCell currPiece = getCellAt(x,y);
+		BoardCell currPiece = getCellAt(x,y);
 		switch (currPiece) {
 			case EMPTY:
 				return;
 			case PLAYER1:
-				setCellAt(x,y, boardCell.PLAYER2);
+				setCellAt(x,y, BoardCell.PLAYER2);
 				scoreP1--;
 				scoreP2++;
 				break;
 			case PLAYER2:
-				setCellAt(x,y, boardCell.PLAYER1);
+				setCellAt(x,y, BoardCell.PLAYER1);
 				scoreP2--;
 				scoreP1++;
 				break;
 		}
 	}
 
-	public boardCell getCellAt(GamePos pos) {
+	public BoardCell getCellAt(GamePos pos) {
 		if (isOutOfBounds(pos))
 			return null;
 		return board.getCellAt(pos.m_x-1, pos.m_y-1); //conversion from board to array
 	}
-	public boardCell getCellAt(int x, int y) {
+	public BoardCell getCellAt(int x, int y) {
 		if (isOutOfBounds(x,y))
 			return null;
 		return board.getCellAt(x-1, y-1); //conversion from board to array
 	}
 
-	private void setCellAt(GamePos pos, boardCell piece) {
+	private void setCellAt(GamePos pos, BoardCell piece) {
 		if (isOutOfBounds(pos))
 			System.out.println("Trying to set cell on out of bounds Pos");
 		board.setCellValue(pos.m_x - 1, pos.m_y - 1, piece);
 	}
-	private void setCellAt(int x, int y, boardCell piece) {
+	private void setCellAt(int x, int y, BoardCell piece) {
 		board.setCellValue(x - 1, y - 1, piece);
 	}
 
@@ -84,10 +84,10 @@ public class Model {
 	}
 
 	private boolean calcIsPossibleMove(Player player, int x, int y) {
-		if (getCellAt(x, y)!= boardCell.EMPTY)
+		if (getCellAt(x, y)!= BoardCell.EMPTY)
 			return false;
-		boardCell thisPiece = (player==Player.PLAYER1)? boardCell.PLAYER1 : boardCell.PLAYER2;
-		boardCell oppPiece = (player==Player.PLAYER1)? boardCell.PLAYER2 : boardCell.PLAYER1;
+		BoardCell thisPiece = (player==Player.PLAYER1)? BoardCell.PLAYER1 : BoardCell.PLAYER2;
+		BoardCell oppPiece = (player==Player.PLAYER1)? BoardCell.PLAYER2 : BoardCell.PLAYER1;
 		// for each offset
 		for (int i=0; i<8; i++) {
 			int currX = x + ROW_OFFSET_ARR[i];
@@ -108,18 +108,18 @@ public class Model {
 	}
 
 	public boolean place(Player player, int x, int y) {
-		if (getCellAt(x, y)!= boardCell.EMPTY || !isPossibleMove(player,x,y)) {
+		if (getCellAt(x, y)!= BoardCell.EMPTY || !isPossibleMove(player,x,y)) {
 			System.out.println("illegal move - (" +x + "," + y +")");
 			return false;
 		}
-		boardCell thisPlayerPiece, oppPiece;
+		BoardCell thisPlayerPiece, oppPiece;
 		if (player==Player.PLAYER1) {
-			thisPlayerPiece = boardCell.PLAYER1;
-			oppPiece = boardCell.PLAYER2;
+			thisPlayerPiece = BoardCell.PLAYER1;
+			oppPiece = BoardCell.PLAYER2;
 			scoreP1++;
 		} else {
-			thisPlayerPiece = boardCell.PLAYER2;
-			oppPiece = boardCell.PLAYER1;
+			thisPlayerPiece = BoardCell.PLAYER2;
+			oppPiece = BoardCell.PLAYER1;
 			scoreP2++;
 		}
 		setCellAt(x,y,thisPlayerPiece);
@@ -129,7 +129,7 @@ public class Model {
 			int currY = y + COL_OFFSET_ARR[i];
 			boolean hasOppPieceBetween = false;
 			while (!isOutOfBounds(currX, currY)) {
-				boardCell currPiece = getCellAt(currX,currY);
+				BoardCell currPiece = getCellAt(currX,currY);
 				if (currPiece == oppPiece)
 					hasOppPieceBetween = true;
 				else if (currPiece == thisPlayerPiece && hasOppPieceBetween) {

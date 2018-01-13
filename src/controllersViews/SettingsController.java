@@ -32,10 +32,10 @@ public class SettingsController {
 	private final int DEFAULT_PIECE_P1 = 0;
 	private final int DEFAULT_PIECE_P2 = 1;
 
-	//SETTINGS TO LOAD
-	private int boardSize = DEFAULT_BOARD_SIZE;
-	private int player1PieceIndex = 0;
-	private int player2PieceIndex = 1;
+	//settings
+	private int boardSize;
+	private int player1PieceIndex;
+	private int player2PieceIndex;
 
 	public void initialize() {
 		// load configuration
@@ -60,12 +60,12 @@ public class SettingsController {
 
 		//set image and slider actions
 		player1PieceImg.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-			nextPiece(Player.PLAYER1);
+			nextPieceIndex(Player.PLAYER1);
 			player1PieceImg.setImage(Assets.getInstance().getPiecesList().get(player1PieceIndex));
 			event.consume();
 		});
 		player2PieceImg.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-			nextPiece(Player.PLAYER2);
+			nextPieceIndex(Player.PLAYER2);
 			player2PieceImg.setImage(Assets.getInstance().getPiecesList().get(player2PieceIndex));
 			event.consume();
 		});
@@ -82,21 +82,14 @@ public class SettingsController {
 			stage.close();
 		}));
 		cancelBtn.setOnAction((event -> {
-			loadSettings();
-			initialize();
+			cancelChanges();
 			Stage stage = (Stage) cancelBtn.getScene().getWindow();
 			stage.close();
 		}));
 
-		//TODO: close window with X fix, save previous settings!
-
-
 	}
 
-	private void refreshStage() {
-
-	}
-	public void loadSettings() {
+	private void loadSettings() {
 		try {
 			SettingsLoader.loadSettings();
 			boardSize = SettingsLoader.getSetting("boardSize");
@@ -111,7 +104,6 @@ public class SettingsController {
 			e.printStackTrace();
 		}
 	}
-
 	private void saveSettings() {
 		try {
 			SettingsLoader.setSetting("boardSize", boardSize);
@@ -123,18 +115,17 @@ public class SettingsController {
 		}
 	}
 
-	private void nextPiece(Player player) {
+	private void nextPieceIndex(Player player) {
 		if (player == Player.PLAYER1) {
 			player1PieceIndex = Assets.getInstance().getNextIndex(player1PieceIndex);
-			if (player1PieceIndex==player2PieceIndex)
+			if (player1PieceIndex == player2PieceIndex)
 				player1PieceIndex = Assets.getInstance().getNextIndex(player1PieceIndex);
 		} else {
 			player2PieceIndex = Assets.getInstance().getNextIndex(player2PieceIndex);
-			if (player1PieceIndex==player2PieceIndex)
+			if (player1PieceIndex == player2PieceIndex)
 				player2PieceIndex = Assets.getInstance().getNextIndex(player2PieceIndex);
 		}
 	}
-
 	public int getBoardSize() {
 		return boardSize;
 	}
@@ -144,5 +135,7 @@ public class SettingsController {
 	public int getPlayer2PieceIndex() {
 		return player2PieceIndex;
 	}
-
+	public void cancelChanges() {
+		initialize();
+	}
 }
