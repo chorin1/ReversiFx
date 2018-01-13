@@ -1,6 +1,5 @@
-package com.ReversiFx.controllersViews;
+package controllersViews;
 
-import com.ReversiFx.assets.Assets;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
@@ -9,8 +8,9 @@ import javafx.stage.Stage;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import com.ReversiFx.model.Player;
-import com.ReversiFx.settingsFromFile.*;
+import model.*;
+import assets.*;
+import settingsFromFile.*;
 
 public class SettingsController {
 	@FXML

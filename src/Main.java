@@ -1,15 +1,15 @@
-package com.ReversiFx;
-
-import com.ReversiFx.controllersViews.GameController;
-import com.ReversiFx.controllersViews.SettingsController;
+import assets.Assets;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.image.Image;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-import com.ReversiFx.model.*;
+import model.*;
+import controllersViews.*;
 
 public class Main extends Application {
     @Override
@@ -21,6 +21,7 @@ public class Main extends Application {
             Scene settingsScene = new Scene(settings, 300, 500);
             Stage settingsPopup = new Stage();
             settingsPopup.setTitle("Settings");
+            settingsPopup.getIcons().add(Assets.getInstance().getAppImage("icon"));
             settingsPopup.setScene(settingsScene);
             settingsPopup.initModality(Modality.WINDOW_MODAL);
             settingsPopup.initOwner(primaryStage);
@@ -34,7 +35,8 @@ public class Main extends Application {
             Parent root = loader.load();
             primaryStage.setTitle("ReversiFx");
             Scene gameScene = new Scene(root, 1280, 720);
-            gameScene.getStylesheets().add("com/ReversiFx/controllersViews/game.css");
+            gameScene.getStylesheets().add("controllersViews/game.css");
+            primaryStage.getIcons().add(Assets.getInstance().getAppImage("icon"));
             primaryStage.setScene(gameScene);
             GameController gameController = (GameController) loader.getController();
 

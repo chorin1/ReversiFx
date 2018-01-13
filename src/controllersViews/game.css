@@ -1,6 +1,6 @@
 .game-grid {
     -fx-background-color: gray;
-    -fx-background-image: url("../Assets/img/damask-1920x1200-62.jpg");
+    -fx-background-image: url("../damask-1920x1200-62.jpg");
     -fx-background-size: 1920 1200;
     -fx-background-repeat: stretch;
 

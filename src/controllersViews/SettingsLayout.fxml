@@ -11,7 +11,7 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.layout.HBox?>
 <BorderPane xmlns:fx="http://javafx.com/fxml/1"
-            xmlns="http://javafx.com/javafx/9.0.1" fx:controller="com.ReversiFx.controllersViews.SettingsController">
+            xmlns="http://javafx.com/javafx/9.0.1" fx:controller="controllersViews.SettingsController">
     <top>
         <StackPane><padding><Insets top="10" bottom="15"></Insets></padding>
         <Text text="Settings" textAlignment="CENTER">

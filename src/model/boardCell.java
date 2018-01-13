@@ -1,4 +1,4 @@
-package com.ReversiFx.model;
+package model;
 public enum boardCell {
 	EMPTY,
 	PLAYER1,

@@ -1,6 +1,5 @@
-package com.ReversiFx.controllersViews;
+package controllersViews;
 
-import com.ReversiFx.assets.Assets;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
@@ -13,7 +12,8 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import java.util.Optional;
 
-import com.ReversiFx.model.*;
+import model.*;
+import assets.*;
 
 public class GameController {
 	private static int CELL_MAX_SIZE = 80;
@@ -253,7 +253,7 @@ public class GameController {
 		alert.setTitle("About");
 		alert.setHeaderText("ReversiFX");
 		alert.setContentText("Ver. 0.6\nA game by Ben C.");
-		alert.setGraphic(new ImageView(Assets.getInstance().aboutImg));
+		alert.setGraphic(new ImageView(Assets.getInstance().getAppImage("aboutImg")));
 		alert.showAndWait();
 	}
 

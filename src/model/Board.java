@@ -1,4 +1,4 @@
-package com.ReversiFx.model;
+package model;
 
 public class Board {
 	private final int m_boardSize;

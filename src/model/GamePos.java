@@ -1,4 +1,4 @@
-package com.ReversiFx.model;
+package model;
 import java.util.Objects;
 public class GamePos {
 	public int m_x;

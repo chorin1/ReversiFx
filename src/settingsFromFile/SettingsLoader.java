@@ -1,4 +1,4 @@
-package com.ReversiFx.settingsFromFile;
+package settingsFromFile;
 
 import java.io.*;
 import java.util.Properties;
