@@ -37,7 +37,7 @@ public class SettingsController {
 	private final int DEFAULT_PIECE_P1 = 0;
 	private final int DEFAULT_PIECE_P2 = 1;
 
-	//settings
+	//temporary settings for user selection
 	private int boardSize;
 	private int player1PieceIndex;
 	private int player2PieceIndex;
@@ -50,22 +50,9 @@ public class SettingsController {
 		// load configuration
 		loadSettings();
 
-		//init slider
+		//init slider max/min values
 		boardSizeSlider.setMax(MAX_BOARD_SIZE);
 		boardSizeSlider.setMin(MIN_BOARD_SIZE);
-		boardSizeSlider.setValue(boardSize);
-		//init slider label
-		boardSizelbl.setText(String.valueOf(boardSize));
-
-		//init images
-		if (player1PieceIndex < Assets.getInstance().getPiecesListSize())
-			player1PieceImg.setImage(Assets.getInstance().getPieceImg(player1PieceIndex));
-		else
-			player1PieceImg.setImage(Assets.getInstance().getPieceImg(DEFAULT_PIECE_P1));
-		if (player2PieceIndex < Assets.getInstance().getPiecesListSize())
-			player2PieceImg.setImage(Assets.getInstance().getPieceImg(player2PieceIndex));
-		else
-			player2PieceImg.setImage(Assets.getInstance().getPieceImg(DEFAULT_PIECE_P2));
 
 		//set image and slider actions
 		player1PieceImg.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
@@ -96,10 +83,31 @@ public class SettingsController {
 			stage.close();
 		}));
 
+		refreshView();
 	}
 
 	/**
-	 * load settings from a file and adjust the view accordingly
+	 * refresh the view according to loaded settings
+	 */
+	private void refreshView() {
+		// update slider
+		boardSizeSlider.setValue(boardSize);
+		boardSizelbl.setText(String.valueOf(boardSize));
+
+		//update piece images
+		if (player1PieceIndex < Assets.getInstance().getPiecesListSize())
+			player1PieceImg.setImage(Assets.getInstance().getPieceImg(player1PieceIndex));
+		else
+			player1PieceImg.setImage(Assets.getInstance().getPieceImg(DEFAULT_PIECE_P1));
+		if (player2PieceIndex < Assets.getInstance().getPiecesListSize())
+			player2PieceImg.setImage(Assets.getInstance().getPieceImg(player2PieceIndex));
+		else
+			player2PieceImg.setImage(Assets.getInstance().getPieceImg(DEFAULT_PIECE_P2));
+
+	}
+
+	/**
+	 * load settings from a file
 	 * if no settings file was found the default settings will be loaded
 	 * @see SettingsLoader
 	 */
@@ -139,7 +147,7 @@ public class SettingsController {
 	 * to make sure settings go back to previous state if user closes game/window unexpectedly
 	 */
 	public void cancelChanges() {
-		initialize();
+		refreshView();
 	}
 
 	/**

@@ -1,0 +1,22 @@
+<component name="ArtifactManager">
+  <artifact type="javafx" name="ReversiFx">
+    <output-path>$PROJECT_DIR$/out/artifacts/ReversiFx</output-path>
+    <properties id="javafx-properties">
+      <options>
+        <option name="appClass" value="Main" />
+        <option name="description" value="" />
+        <option name="height" value="720" />
+        <option name="htmlPlaceholderId" value="" />
+        <option name="title" value="ReversiFx" />
+        <option name="vendor" value="Ben C." />
+        <option name="version" value="0.6" />
+        <option name="width" value="1280" />
+      </options>
+    </properties>
+    <root id="root">
+      <element id="archive" name="ReversiFx.jar">
+        <element id="module-output" name="ReversiFx" />
+      </element>
+    </root>
+  </artifact>
+</component>
