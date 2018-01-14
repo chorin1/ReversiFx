@@ -12,6 +12,10 @@ import model.*;
 import assets.*;
 import settingsFromFile.*;
 
+/**
+ * controls the game settings view.
+ * uses settingsFromFile.SettingsLoader to load/save settings for the next game.
+ */
 public class SettingsController {
 	@FXML
 	private Button cancelBtn;
@@ -26,6 +30,7 @@ public class SettingsController {
 	@FXML
 	private ImageView player2PieceImg;
 
+	//defaults and constants
 	private final int MAX_BOARD_SIZE = 20;
 	private final int MIN_BOARD_SIZE = 4;
 	private final int DEFAULT_BOARD_SIZE = 8;
@@ -37,6 +42,10 @@ public class SettingsController {
 	private int player1PieceIndex;
 	private int player2PieceIndex;
 
+	/**
+	 * initialize the view according to the save configuration
+	 * if no saved file is found the default configuration will be loaded
+	 */
 	public void initialize() {
 		// load configuration
 		loadSettings();
@@ -50,23 +59,23 @@ public class SettingsController {
 
 		//init images
 		if (player1PieceIndex < Assets.getInstance().getPiecesListSize())
-			player1PieceImg.setImage(Assets.getInstance().getPiecesList().get(player1PieceIndex));
+			player1PieceImg.setImage(Assets.getInstance().getPieceImg(player1PieceIndex));
 		else
-			player1PieceImg.setImage(Assets.getInstance().getPiecesList().get(DEFAULT_PIECE_P1));
+			player1PieceImg.setImage(Assets.getInstance().getPieceImg(DEFAULT_PIECE_P1));
 		if (player2PieceIndex < Assets.getInstance().getPiecesListSize())
-			player2PieceImg.setImage(Assets.getInstance().getPiecesList().get(player2PieceIndex));
+			player2PieceImg.setImage(Assets.getInstance().getPieceImg(player2PieceIndex));
 		else
-			player2PieceImg.setImage(Assets.getInstance().getPiecesList().get(DEFAULT_PIECE_P2));
+			player2PieceImg.setImage(Assets.getInstance().getPieceImg(DEFAULT_PIECE_P2));
 
 		//set image and slider actions
 		player1PieceImg.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
 			nextPieceIndex(Player.PLAYER1);
-			player1PieceImg.setImage(Assets.getInstance().getPiecesList().get(player1PieceIndex));
+			player1PieceImg.setImage(Assets.getInstance().getPieceImg(player1PieceIndex));
 			event.consume();
 		});
 		player2PieceImg.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
 			nextPieceIndex(Player.PLAYER2);
-			player2PieceImg.setImage(Assets.getInstance().getPiecesList().get(player2PieceIndex));
+			player2PieceImg.setImage(Assets.getInstance().getPieceImg(player2PieceIndex));
 			event.consume();
 		});
 		boardSizeSlider.valueProperty().addListener((obs, oldval, newVal) -> {
@@ -89,6 +98,11 @@ public class SettingsController {
 
 	}
 
+	/**
+	 * load settings from a file and adjust the view accordingly
+	 * if no settings file was found the default settings will be loaded
+	 * @see SettingsLoader
+	 */
 	private void loadSettings() {
 		try {
 			SettingsLoader.loadSettings();
@@ -96,7 +110,7 @@ public class SettingsController {
 			player1PieceIndex = SettingsLoader.getSetting("p1piece");
 			player2PieceIndex = SettingsLoader.getSetting("p2piece");
 		} catch (FileNotFoundException e) {
-			System.out.println("settings file not found");
+			// settings file not found, load defaults
 			boardSize = DEFAULT_BOARD_SIZE;
 			player1PieceIndex = DEFAULT_PIECE_P1;
 			player2PieceIndex = DEFAULT_PIECE_P2;
@@ -104,6 +118,11 @@ public class SettingsController {
 			e.printStackTrace();
 		}
 	}
+
+	/**
+	 * save current user choice to the settings file
+	 * @see SettingsLoader
+	 */
 	private void saveSettings() {
 		try {
 			SettingsLoader.setSetting("boardSize", boardSize);
@@ -115,6 +134,20 @@ public class SettingsController {
 		}
 	}
 
+	/**
+	 * cancel made changes by the user. note that this method is publid
+	 * to make sure settings go back to previous state if user closes game/window unexpectedly
+	 */
+	public void cancelChanges() {
+		initialize();
+	}
+
+	/**
+	 * advance piece image selection by 1.
+	 * will show image if it has not been selected yet by the other player
+	 * @param player player to advance the picture index of
+	 * @see Assets
+	 */
 	private void nextPieceIndex(Player player) {
 		if (player == Player.PLAYER1) {
 			player1PieceIndex = Assets.getInstance().getNextIndex(player1PieceIndex);
@@ -126,16 +159,29 @@ public class SettingsController {
 				player2PieceIndex = Assets.getInstance().getNextIndex(player2PieceIndex);
 		}
 	}
+
+	/**
+	 * getter for the saved board size
+	 * @return wanted size of board for the next game
+	 */
 	public int getBoardSize() {
 		return boardSize;
 	}
+
+	/**
+	 * get the index of selected piece image by player 1
+	 * @return index of that piece in the Assets container
+	 * @see Assets
+	 */
 	public int getPlayer1PieceIndex() {
 		return player1PieceIndex;
 	}
+	/**
+	 * get the index of selected piece image by player 2
+	 * @return index of that piece in the Assets container
+	 * @see Assets
+	 */
 	public int getPlayer2PieceIndex() {
 		return player2PieceIndex;
-	}
-	public void cancelChanges() {
-		initialize();
 	}
 }

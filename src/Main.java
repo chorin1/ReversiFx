@@ -3,17 +3,20 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.image.Image;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import model.*;
 import controllersViews.*;
 
+/**
+ * ReversiFX, a Reversi PVP game done by Javafx
+ * @author      Ben C
+ * @version     0.6
+ */
 public class Main extends Application {
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
         try {
             // set up settings stage
             FXMLLoader loader = new FXMLLoader(getClass().getResource("controllersViews/SettingsLayout.fxml"));
@@ -26,10 +29,10 @@ public class Main extends Application {
             settingsPopup.initModality(Modality.WINDOW_MODAL);
             settingsPopup.initOwner(primaryStage);
             settingsPopup.setResizable(false);
-            SettingsController setController = (SettingsController) loader.getController();
+            SettingsController settingsController = loader.getController();
 
-            // set up model
-            Model model = new Model(setController.getBoardSize());
+            // set up model (from user preferences)
+            Model model = new Model(settingsController.getBoardSize());
             // set up game stage
             loader = new FXMLLoader(getClass().getResource("controllersViews/GameLayout.fxml"));
             Parent root = loader.load();
@@ -38,9 +41,9 @@ public class Main extends Application {
             gameScene.getStylesheets().add("controllersViews/game.css");
             primaryStage.getIcons().add(Assets.getInstance().getAppImage("icon"));
             primaryStage.setScene(gameScene);
-            GameController gameController = (GameController) loader.getController();
+            GameController gameController = loader.getController();
 
-            gameController.initSettings(setController, settingsPopup);
+            gameController.initSettings(settingsController, settingsPopup);
             gameController.setModel(model);
             gameController.initBoard();
 

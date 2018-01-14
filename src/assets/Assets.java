@@ -8,15 +8,21 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-
-// singleton class
+/**
+ * A singleton class that contains all game assets.
+ */
 public class Assets {
 	private static Assets instance = null;
-	private final ArrayList<Image> piecesArr = new ArrayList<Image>();
+	// stores game pieces
+	private final ArrayList<Image> piecesArr = new ArrayList<>();
+	// stores main app images (icons, graphical content etc..)
 	private final HashMap<String, Image> appImages = new HashMap<>();
+
+	// a blank image to occupy cell
 	public WritableImage blank = null;
 	private final int photosMaxSize = 120;
 
+	//private constructor of singleton, runs only once
 	private Assets() {
 		// load core elements (basic pieces)
 		try {
@@ -52,11 +58,16 @@ public class Assets {
 			piecesArr.add(roi);
 			piecesArr.add(yossi);
 
+			// init blankimage to be the maximum size of the pieces
 			blank = new WritableImage(getLargestWidth(), getLargestHeight());
 		} catch (IllegalArgumentException e) {
 			assetLoadExceptionAlert(e);
 		}
 	}
+
+	/**
+	 * @return the instance of Assets
+	 */
 	public static Assets getInstance() {
 		if(instance == null) {
 			instance = new Assets();
@@ -64,20 +75,44 @@ public class Assets {
 		return instance;
 	}
 
-	public ArrayList<Image> getPiecesList() {
-		return piecesArr;
+	/**
+	 * get a piece image from the container
+	 * @param index index of the piece to get
+	 * @return Image of the piece, null if that index doesn't exist
+	 */
+	public Image getPieceImg(int index) {
+		if (index<0 || index>getPiecesListSize()-1)
+			return null;
+		return piecesArr.get(index);
 	}
+
+	/**
+	 * get app image
+	 * @param key key of the app image to get
+	 * @return the corresponding image, null if not found
+	 */
 	public Image getAppImage(String key) {
 		return appImages.get(key);
 	}
+
+	/**
+	 * @return amount of pieces in the pieces container
+	 */
 	public int getPiecesListSize() {
 		return piecesArr.size();
 	}
+
+	/**
+	 * @param index piece index
+	 * @return the next available index of a piece in the container
+	 */
 	public int getNextIndex(int index) {
 		if (index == getPiecesListSize()-1)
 			return 0;
 		return index+1;
 	}
+
+	// handle method to get the largest width of piece image in the container
 	private int getLargestWidth() {
 		int largest = -1;
 		for (Image img: piecesArr) {
@@ -86,6 +121,7 @@ public class Assets {
 		}
 		return largest;
 	}
+	// handle method to get the largest height of piece image in the container
 	private int getLargestHeight() {
 		int largest = -1;
 		for (Image img: piecesArr) {
@@ -95,6 +131,7 @@ public class Assets {
 		return largest;
 	}
 
+	// open an alert if there's an exception loading images
 	private void assetLoadExceptionAlert(IllegalArgumentException e) {
 		Alert alert = new Alert(Alert.AlertType.ERROR);
 		alert.setTitle("No game for you");
